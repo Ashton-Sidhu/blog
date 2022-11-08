@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ashton Sidhu">
+<meta name="dcterms.date" content="2020-03-14">
+<meta name="description" content="Introduction to Aethos Modelling.">
+
+<title>quarto_blog - Training, Tracking, Analyzing, Interpreting and Serving Models with One Line of Code</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">quarto_blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Training, Tracking, Analyzing, Interpreting and Serving Models with One Line of Code</h1>
+                  <div>
+        <div class="description">
+          Introduction to Aethos Modelling.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">markdown</div>
+                <div class="quarto-category">aethos</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ashton Sidhu </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 14, 2020</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#prepping-the-data" id="toc-prepping-the-data" class="nav-link active" data-scroll-target="#prepping-the-data">Prepping the Data</a></li>
+  <li><a href="#modelling" id="toc-modelling" class="nav-link" data-scroll-target="#modelling">Modelling</a></li>
+  <li><a href="#analyzing-models" id="toc-analyzing-models" class="nav-link" data-scroll-target="#analyzing-models">Analyzing Models</a></li>
+  <li><a href="#interpreting-models" id="toc-interpreting-models" class="nav-link" data-scroll-target="#interpreting-models">Interpreting Models</a></li>
+  <li><a href="#viewing-models-in-mlflow" id="toc-viewing-models-in-mlflow" class="nav-link" data-scroll-target="#viewing-models-in-mlflow">Viewing Models in MLFlow</a></li>
+  <li><a href="#serving-models" id="toc-serving-models" class="nav-link" data-scroll-target="#serving-models">Serving Models</a></li>
+  <li><a href="#what-else-can-you-do" id="toc-what-else-can-you-do" class="nav-link" data-scroll-target="#what-else-can-you-do">What Else Can You Do?</a></li>
+  <li><a href="#feedback" id="toc-feedback" class="nav-link" data-scroll-target="#feedback">Feedback</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>As a data scientist, rapid experimentation is extremely important. If an idea doesn’t work it’s best to fail quickly and find out sooner rather than later.</p>
+<p>When it comes to modelling, rapid experimentation is already fairly simple. All model implementations follow the same API interface so all you have to do is initialize the model and train it. The problem comes now when you have to interpret, track, and compare each model.</p>
+<p>Do you make a large notebook with all your models and scroll up and down or use a table of contents to see the results of different models? Do you create a different notebook for each model and then flip back and forth between notebooks? How do you track iterations of the models if you start tweaking the parameters? Where do you store artifacts to revisit at a later date or for further analysis?</p>
+<p>I’m going to demonstrate a way to address these problems by training multiple models, each with 1 line of code, view the overall results easily, analyze the models, interpret the models, track the models in MLFlow and serve them using Aethos.</p>
+<section id="prepping-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="prepping-the-data">Prepping the Data</h2>
+<p>We’ll use Aethos to quickly prep the data. For more information on how to analyze and transform your datasets with Aethos, check out my previous blog post <a href="https://medium.com/aethos-a-data-science-library-to-automate-workflow-17cd76b073a4">here</a>. Load the Titanic training data from the Aethos repo.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> aethos <span class="im">as</span> at  </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.read_csv(<span class="st">'https://raw.githubusercontent.com/Ashton-Sidhu/aethos/develop/examples/data/train.csv'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Pass the data into Aethos.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> at.Data(data, target_field<span class="op">=</span><span class="st">'Survived'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1802/1*TupqtKz0HX7w1KdAw5RcNA.png" class="img-fluid"><img class="dj t u ev ak" src="" role="presentation"></p>
+<p>The focus of this post is modelling so let’s quickly preprocess the data. We’re going to use the Survived, Pclass, Sex, Age, Fare and Embarked features. insert here</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df.drop(keep<span class="op">=</span>[<span class="st">'Survived'</span>, <span class="st">'Pclass'</span>, <span class="st">'Sex'</span>, <span class="st">'Age'</span>, <span class="st">'Fare'</span>, <span class="st">'Embarked'</span>])</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df.standardize_column_names()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Replace the missing values in the Age and the Embarked columns.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df.replace_missing_median(<span class="st">'age'</span>)  </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>df.replace_missing_mostcommon(<span class="st">'embarked'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Normalize the values in the Age and Fare columns and One Hot Encode the Sex, Pclass and Embarked features.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df.onehot_encode(<span class="st">'sex'</span>, <span class="st">'pclass'</span>, <span class="st">'embarked'</span>, keep_col<span class="op">=</span><span class="va">False</span>)  </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df.normalize_numeric(<span class="st">'fare'</span>, <span class="st">'age'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1652/1*hjvdWaRUnBu0aR_vZeUetA.png" class="img-fluid"></p>
+<!-- <img class="dj t u ev ak" src="https://miro.medium.com/max/1652/1*hjvdWaRUnBu0aR_vZeUetA.png" role="presentation"/> -->
+<p>With Aethos, the transformer is fit to the training set and applied to the test set. With just one line of code both your training and test set have been transformed.</p>
+</section>
+<section id="modelling" class="level2">
+<h2 class="anchored" data-anchor-id="modelling">Modelling</h2>
+<p>To train Sklearn, XGBoost, LightGBM, etc. models with Aethos, first transition from the data wrangling object to the Model object.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> at.Model(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The model object behaves the same way as the Data object so if you have data that has already been processed, you can initiate the Model object the same way as the Data object.</p>
+<p>Next, we’re going to enable experiment tracking with MLFlow.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>at.options.track_experiments <span class="op">=</span> <span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now that everything is set up, training a model and getting predictions is as simple as this:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> model.LogisticRegression(C<span class="op">=</span><span class="fl">0.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1968/1*ld17UeHatYiPPX814iZrNA.png" class="img-fluid"></p>
+<p>To train a model with the optimal parameters using Gridsearch, specify the <code>gridsearch</code> parameter when initializing the model.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> model.LogisticRegression(gridsearch<span class="op">=</span>{<span class="st">'C'</span>: [<span class="fl">0.01</span>, <span class="fl">0.1</span>]}, tol<span class="op">=</span><span class="fl">0.001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1984/1*9WwmWTEq_qYnYdYn9Rq9WQ.png" class="img-fluid"></p>
+<p>This will return the model with the optimal parameters defined by your Gridsearch scoring method.</p>
+<p>Finally, if you want to cross validate your models there are a few options:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> model.LogisticRegression(cv<span class="op">=</span><span class="dv">5</span>, C<span class="op">=</span><span class="fl">0.001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will perform 5-fold cross validation on your model and display the mean score as well as the learning curve to help gauge data quality, over-fitting, and under-fitting.</p>
+<p><img src="https://miro.medium.com/max/1948/1*hGvqawspAru2kLueK_3g6g.png" class="img-fluid"></p>
+<p>You can also use it with Gridsearch:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> model.LogisticRegression(cv<span class="op">=</span><span class="dv">5</span>, gridsearch<span class="op">=</span>{<span class="st">'C'</span>: [<span class="fl">0.01</span>, <span class="fl">0.1</span>]}, tol<span class="op">=</span><span class="fl">0.001</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This will first use Gridsearch to train a model with the optimal parameters and then cross validate it. Currently supported cross validation methods are k-fold and stratified k-fold.</p>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/1640/1*Hu087E2e7sNrXFNsyzzVdg.png" width="820" height="699" role="presentation"></p>
+<p>To train multiple models at once (in series or in parallel) specify the <code>run</code> parameter when defining your model.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>lr <span class="op">=</span> model.LogisticRegression(cv<span class="op">=</span><span class="dv">5</span>, gridsearch<span class="op">=</span>{<span class="st">'C'</span>: [<span class="fl">0.01</span>, <span class="fl">0.1</span>]}, tol<span class="op">=</span><span class="fl">0.001</span>, run<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s queue up a few more models to train:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model.DecisionTreeClassification(run<span class="op">=</span><span class="va">False</span>)  </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>model.RandomForestClassification(run<span class="op">=</span><span class="va">False</span>)  </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>model.LightGBMClassification(run<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can view queued and trained models by running the following:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>model.list_models()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/1598/1*W2PoK5XdML01ObWDxPgLHQ.png" width="799" height="114" role="presentation"></p>
+<p>To now run all queued models, by default in parallel:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dt, rf, lgbm <span class="op">=</span> model.run_models()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can now go grab a coffee or a meal while all your models are trained simultaneously!</p>
+</section>
+<section id="analyzing-models" class="level2">
+<h2 class="anchored" data-anchor-id="analyzing-models">Analyzing Models</h2>
+<p>Every model you train by default has a name. This allows you to train multiple versions of the same model with the same model object and API, while still having access to each individual model’s results. You can see each model’s default name in the function header by pressing <code>Shift + Tab</code> in Jupyter Notebook.</p>
+<p><img src="https://miro.medium.com/max/1930/1*v6Nhfwh8MRJTZDY7IvkShA.png" class="img-fluid"></p>
+<p>You can also change the model name by specifying a name of your choosing when initializing the function.</p>
+<p>First, let’s compare all the models we’ve trained against each other:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>model.compare_models()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1762/1*ldjb-jJzEj9juJTvibsiPA.png" class="img-fluid"></p>
+<p>You can see every models’ performance against a wide variety of metrics. In a data science project there are predefined metrics you want to compare models against (if you don’t, you should). You can specify those project metrics through the options.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>at.options.project_metrics <span class="op">=</span> [<span class="st">'Accuracy'</span>, <span class="st">'Balanced Accuracy'</span>, <span class="st">'Zero One Loss'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now when you compare models, you’ll only see the project metrics.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>model.compare_models()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1762/1*mnUB5A81jPm73JSDqKhFFQ.png" class="img-fluid"></p>
+<p>You can also view the metrics just for a single model by running the following:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dt.metrics() <span class="co"># Shows metrics for the Decision Tree model  </span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>rf.metrics() <span class="co"># Shows metrics for the Random Forest model  </span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>lgbm.metrics() <span class="co"># Shows metrics for the LightGBM model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>You can use the same API to see each models’ RoC Curve, Confusion matrix, the index of misclassified predictions, etc.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dt.confusion_matrix(output_file<span class="op">=</span><span class="st">'confusion_matrix.png'</span>) <span class="co"># Confusion matrix for the Decision Tree model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/920/1*ZfamBQhQuMjFH7aI6gc2VQ.png" width="460" height="372" role="presentation"></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rf.confusion_matrix(output_file<span class="op">=</span><span class="st">'confusion_matrix.png'</span>) <span class="co"># Confusion matrix for the random forest model</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/842/1*oARwsa2CRquJKnnCw9vUog.png" width="421" height="375" role="presentation"></p>
+</section>
+<section id="interpreting-models" class="level2">
+<h2 class="anchored" data-anchor-id="interpreting-models">Interpreting Models</h2>
+<p>Aethos comes equipped with automated SHAP use cases to interpret each model. You can view the force, decision, summary, and dependence plot for any model — each with customizable parameters to satisfy your use case.</p>
+<p>By specifying the <code>output_file</code> parameter, Aethos knows to save and track this artifact for a specific model.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>lgbm.decision_plot(output_file<span class="op">=</span><span class="st">'decision_plot.png'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/972/1*7NbpF_RkZZyH7daFfjDQ5Q.png" width="486" height="333" role="presentation"></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>lgbm.force_plot(output_file<span class="op">=</span><span class="st">'force_plot.png'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1768/1*Ch0FccSmO0EhP4jVaViq9Q.png" class="img-fluid"></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>lgbm.shap_get_misclassified_index()  </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># [2, 10, 21, 38, 43, 57, 62, 69, 70, 85, 89, 91, 96, 98, 108, 117, 128, 129, 139, 141, 146, 156, 165, 167, 169]  </span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>lgbm.force_plot(<span class="dv">2</span>, output_file<span class="op">=</span><span class="st">'force_plot_2.png'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="https://miro.medium.com/max/1760/1*-Ng-OvO4PohgDaUL989CzQ.png" class="img-fluid"></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>lgbm.summary_plot(output_file<span class="op">=</span><span class="st">'summary_plot.png'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/988/1*ZQAH1vFeeb0foFn1lTqvvA.png" width="494" height="321" role="presentation"></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lgbm.dependence_plot(<span class="st">'fare'</span>, output_file<span class="op">=</span><span class="st">'dep_plot.png'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/844/1*3FYBXislUhjrPn5xxQeKDQ.png" width="422" height="291" role="presentation"></p>
+<p>For a more automated experience, run:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lgbm.interpret_model()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/1578/1*omCNzoZiRl764wukTZC4LA.png" width="789" height="696" role="presentation"></p>
+<p>This displays an interactive dashboard where you can interpret your model’s prediction using LIME, SHAP, Morris Sensitivity, etc.</p>
+</section>
+<section id="viewing-models-in-mlflow" class="level2">
+<h2 class="anchored" data-anchor-id="viewing-models-in-mlflow">Viewing Models in MLFlow</h2>
+<p>As we were training models and viewing results, our experiments were automatically being tracked. If you run <code>aethos mlflow-ui</code> from the command line, a local MLFlow instance will be started for you to view the results and artifacts of your experiments. Navigate to <a href="http://127.0.0.1:10000">localhost:10000.</a></p>
+<p><img src="https://miro.medium.com/max/3110/1*sGYV3PXwZfiaGgVS5LHYFw.png" class="img-fluid"></p>
+<p>Each of your models and any saved artifacts are tracked and can be viewed from the UI, including parameters and metrics! To view and download model artifacts, including the pickle file for a specific model, click on the hyperlink in the date column.</p>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/1222/1*Qj0uPwQfKLNX48k1hEEELg.png" width="611" height="905" role="presentation"></p>
+<p>You get a detailed breakdown of the metrics for the model as well as the model parameters and towards the bottom, you will see all your saved artifacts for a specific model.</p>
+<p><img src="https://miro.medium.com/max/3714/1*XumJ_6hL1jmrCeagfeTahA.png" class="img-fluid"></p>
+<p>Note: Cross validation learning curves and mean score plots are always saved as artifacts.</p>
+<p>To change the name of the experiment ( by default it is my-experiment) specify the name when initiating the Model object ( <code>exp_name</code>), otherwise every model will get added to my-experiment.</p>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/1136/1*dAp7y7lFvklShXVgTnXiHw.png" width="568" height="197" role="presentation"></p>
+</section>
+<section id="serving-models" class="level2">
+<h2 class="anchored" data-anchor-id="serving-models">Serving Models</h2>
+<p>Once you’ve decided on a model you want to serve for predictions, you can easily generate the required files to serve the model with a RESTful API using FastAPI and Gunicorn.</p>
+<pre><code>dt.to_service('titanic')</code></pre>
+<p><img class="dj t u ev ak" src="https://miro.medium.com/max/1174/1*AYq8GvGgFywB9KqZjPE3bA.png" width="587" height="91" role="presentation"></p>
+<p>If you’re familiar with MLFlow, you can always use it to serve your models as well. Open a terminal where the deployment files are being kept. I recommend moving these files to a git repository to version control both the model and served files.</p>
+<p>Follow the instructions to build the docker container and then run it detached.</p>
+<pre><code>docker build -t titanic:1.0.0 ./  
+docker run -d --name titanic -p 1234:80 titanic:1.0.0</code></pre>
+<p>Now navigate to <a href="http://127.0.0.1/docs">localhost:1234/docs</a> to test your API. You can now serve predictions by sending POST requests to 127.0.0.1:1234/predict.</p>
+<p><img src="https://miro.medium.com/max/2604/1*sJNnrTN26U6ZEMr8IPKm0Q.png" class="img-fluid"> <img src="https://miro.medium.com/max/3224/1*iwfr8epMkYyg-MyX78C0Hg.png" class="img-fluid"></p>
+<p><strong>Now one big thing to note</strong>, this is running a default configuration and should not be used in production without securing it and configuring the server for production use. In the future, I will add these configurations myself so you can more or less “throw” a model straight into production with minimal configuration changes.</p>
+<p>This feature is still in its infancy and one that I will actively continue to develop and improve.</p>
+</section>
+<section id="what-else-can-you-do" class="level2">
+<h2 class="anchored" data-anchor-id="what-else-can-you-do">What Else Can You Do?</h2>
+<p>While this post is a semi- comprehensive guide of modelling with Aethos, you can also run statistical tests such as T-Test, Anovas, use pretrained models such as BERT and XLNet for sentiment analysis and question answering, perform extractive summarization with TextRank, train a gensim LDA model, as well as clustering, anomaly detection and regression models.</p>
+<p>The full example can be seen <a href="https://github.com/Ashton-Sidhu/aethos/blob/develop/examples/Modelling%20with%20Aethos.ipynb">here</a>!</p>
+</section>
+<section id="feedback" class="level2">
+<h2 class="anchored" data-anchor-id="feedback">Feedback</h2>
+<p>I encourage all feedback about this post or Aethos. You can message me on <a href="https://twitter.com/ashtonasidhu">twitter</a> or e-mail me at sidhuashton@gmail.com.</p>
+<p>Any bug or feature requests, please create an issue on the <a href="https://github.com/Ashton-Sidhu/aethos/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc">Github repo</a>. I welcome all feature requests and any contributions. This project is a great starter if you’re looking to contribute to an open source project — you can always message me if you need assistance getting started.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
