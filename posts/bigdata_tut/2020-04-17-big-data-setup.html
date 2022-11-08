@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.1.251">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ashton Sidhu">
+<meta name="dcterms.date" content="2020-04-17">
+<meta name="description" content="Setup your own Big Data infrastructure at home.">
+
+<title>Ashton’s Tech Tales - Tutorial: How to Setup your own Big Data Environment with Hadoop, Spark and Hive for Data Science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Ashton’s Tech Tales</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">About</a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"><i class="bi bi-github" role="img">
+</i> 
+ </a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"><i class="bi bi-twitter" role="img">
+</i> 
+ </a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Tutorial: How to Setup your own Big Data Environment with Hadoop, Spark and Hive for Data Science</h1>
+                  <div>
+        <div class="description">
+          Setup your own Big Data infrastructure at home.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">markdown</div>
+                <div class="quarto-category">big data</div>
+                <div class="quarto-category">hadoop</div>
+                <div class="quarto-category">spark</div>
+                <div class="quarto-category">hive</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Ashton Sidhu </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 17, 2020</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites">Prerequisites</a></li>
+  <li><a href="#step-1---download-hadoop-and-hive" id="toc-step-1---download-hadoop-and-hive" class="nav-link" data-scroll-target="#step-1---download-hadoop-and-hive">Step 1 - Download Hadoop and Hive</a></li>
+  <li><a href="#step-2---setup-authorized-or-password-less-ssh." id="toc-step-2---setup-authorized-or-password-less-ssh." class="nav-link" data-scroll-target="#step-2---setup-authorized-or-password-less-ssh.">Step 2 - Setup Authorized (or Password-less) SSH.</a></li>
+  <li><a href="#step-3---install-java-8" id="toc-step-3---install-java-8" class="nav-link" data-scroll-target="#step-3---install-java-8">Step 3 - Install Java 8</a></li>
+  <li><a href="#step-4---configure-hadoop-yarn" id="toc-step-4---configure-hadoop-yarn" class="nav-link" data-scroll-target="#step-4---configure-hadoop-yarn">Step 4 - Configure Hadoop + Yarn</a></li>
+  <li><a href="#step-5---setup-hive" id="toc-step-5---setup-hive" class="nav-link" data-scroll-target="#step-5---setup-hive">Step 5 - Setup Hive</a></li>
+  <li><a href="#step-6---setup-spark" id="toc-step-6---setup-spark" class="nav-link" data-scroll-target="#step-6---setup-spark">Step 6 - Setup Spark</a></li>
+  <li><a href="#test-integrations" id="toc-test-integrations" class="nav-link" data-scroll-target="#test-integrations">Test Integrations</a></li>
+  <li><a href="#practical-hadoop-use-cases" id="toc-practical-hadoop-use-cases" class="nav-link" data-scroll-target="#practical-hadoop-use-cases">Practical Hadoop Use Cases</a></li>
+  <li><a href="#feedback" id="toc-feedback" class="nav-link" data-scroll-target="#feedback">Feedback</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>Working on your own data science projects are a great opportunity to learn some new skills and hone existing skills, but what if you want to use technologies that you would use in industry such as Hadoop, Spark on a distributed cluster, Hive, etc. and have them all integrated? This is where the value comes from when building your own infrastructure.</p>
+<p>You become familiar with the technologies, get to know the ins and outs about how it operates, debug and experience the different types of error messages and really get a sense of how the technology works over all instead of just interfacing with it. If you are also working with your own private data or confidential data in general, you may not want to upload it to an external service to do big data processing for privacy or security reasons. So, in this tutorial I’m going to walk through how to setup your own Big Data infrastructure on your own computer, home lab, etc. We’re going to setup a single node Hadoop &amp; Hive instance and a “distributed” spark cluster integrated with Jupyter.</p>
+<p><em>Edit</em>: Thanks to <a href="https://medium.com/@dvillaj"><span class="citation" data-cites="Daniel">@Daniel</span> Villanueva</a> you can now deploy a VM with Hadoop, Spark and Hive pre-configured and ready to go through his Vagrant image. You can check it out on his Github <a href="https://github.com/dvillaj/spark-box">here</a>.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This tutorial is not for an industry production installation!</p>
+</div>
+</div>
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<ul>
+<li>A Debian based distro - Ubuntu, Pop-os, etc</li>
+<li>Basic command line knowledge helps, but not essential for installation</li>
+</ul>
+</section>
+<section id="step-1---download-hadoop-and-hive" class="level2">
+<h2 class="anchored" data-anchor-id="step-1---download-hadoop-and-hive">Step 1 - Download Hadoop and Hive</h2>
+<p>Hadoop is easily the most common big data warehouse platform used in industry today and is a must know for any big data job. In short, Hadoop is an open-source software framework used for storing and processing Big Data in a distributed manner. You can download the latest version from <a href="https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.1.3/hadoop-3.1.3-src.tar.gz">here</a>.</p>
+<p>Hive is usually added on top of Hadoop to query the data in Hadoop in a SQL like fashion. Hive makes job easy for performing operations like</p>
+<ul>
+<li>Data encapsulation</li>
+<li>Ad-hoc queries</li>
+<li>Analysis of huge datasets</li>
+</ul>
+<p>Hive is slow and generally used for batch jobs only. A much faster version of Hive would be something like Impala, but for home use - it gets the job done. You can download the latest version of Hive <a href="https://downloads.apache.org/hive/hive-3.1.2/">here</a>.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Make sure you download the binary (bin) version and not the source (src) version!</p>
+</div>
+</div>
+<section id="extract-the-files-to-opt" class="level4">
+<h4 class="anchored" data-anchor-id="extract-the-files-to-opt">Extract the files to /opt</h4>
+<pre class="shell"><code>cd ~/Downloads
+tar -C /opt -xzvf apache-hive-3.1.2-bin.tar.gz
+tar -C /opt -xzvf hadoop-3.1.3-src.tar.gz</code></pre>
+<p>Rename them to <code>hive</code> and <code>hadoop</code>.</p>
+<pre class="shell"><code>cd /opt
+mv hadoop-3.1.3-src hadoop
+mv apache-hive-3.1.2-bin hive</code></pre>
+</section>
+</section>
+<section id="step-2---setup-authorized-or-password-less-ssh." class="level2">
+<h2 class="anchored" data-anchor-id="step-2---setup-authorized-or-password-less-ssh.">Step 2 - Setup Authorized (or Password-less) SSH.</h2>
+<p>Why do we need to do this? The Hadoop core uses Shell (SSH) to launch the server processes on the slave nodes. It requires a password-less SSH connection between the master and all conencted nodes. Otherwise, you would have to manually go to each node and start each Hadoop process.</p>
+<p>Since we are running a local instance of Hadoop, we can save ourselves the hassle of setting up hostnames, SSH keys and adding them to each box. If this were a distributed environment, it would also be best to create a <code>hadoop</code> user, but it’s not necessary for a single node setup and personal use.</p>
+<p>The really easy, <strong>only suitable for home use, should not be used or done anywhere else way is</strong>:</p>
+<p><code>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</code></p>
+<p>Now run <code>ssh localhost</code> and you should be able to login without a password.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ssh.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Successful SSH login</figcaption><p></p>
+</figure>
+</div>
+<p>To get an idea of what it takes to configure the networking and infrastructure on a distributed environment, <a href="https://www.tutorialspoint.com/hadoop/hadoop_multi_node_cluster.htm">this</a> is a great source.</p>
+</section>
+<section id="step-3---install-java-8" class="level2">
+<h2 class="anchored" data-anchor-id="step-3---install-java-8">Step 3 - Install Java 8</h2>
+<p>One of the most important steps of this tutorial.</p>
+<p>{% include alert.html text=“If this is done incorrectly, it will cause a grueling number of hours debugging vague error messages just to realize the problem and solution was so simple.” %}</p>
+<p>Hadoop has one main requirement and this is Java version 8. Funnily enough, that’s also the Java requirement for Spark, also very important.</p>
+<pre class="shell"><code>sudo apt-get update
+sudo apt-get install openjdk-8-jdk</code></pre>
+<p>Verify the Java version.</p>
+<p><code>java -version</code></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="corr_java.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Incorrect Java version</figcaption><p></p>
+</figure>
+</div>
+<p>If for some reason you don’t see the output above, you need to update your default Java version.</p>
+<p><code>sudo update-alternatives --config java</code></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="update-alt.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Update Java version</figcaption><p></p>
+</figure>
+</div>
+<p>Choose the number associated with Java 8.</p>
+<p>Check the version again.</p>
+<p><code>java -version</code></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="corr_java.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Correct Java version</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="step-4---configure-hadoop-yarn" class="level2">
+<h2 class="anchored" data-anchor-id="step-4---configure-hadoop-yarn">Step 4 - Configure Hadoop + Yarn</h2>
+<p>Apache Hadoop YARN (Yet Another Resource Negotiator) is a cluster management technology. At a very basic level it helps Hadoop manage and monitor its workloads.</p>
+<section id="initial-hadoop-setup" class="level4">
+<h4 class="anchored" data-anchor-id="initial-hadoop-setup">Initial Hadoop Setup</h4>
+<p>First let’s set our environment variables. These specifies where the configuration for Hadoop, Spark and Hive is located.</p>
+<p><code>nano ~/.bashrc</code></p>
+<p>Add this to the bottom of your <code>.bashrc</code> file.</p>
+<pre class="shell"><code>export HADOOP_HOME=/opt/hadoop
+export HADOOP_INSTALL=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+
+export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:$LD_LIBRARY_PATH
+
+export HIVE_HOME=/opt/hive
+export PATH=$PATH:$HIVE_HOME/bin</code></pre>
+<p>Save and exit out of nano <code>CTRL + o</code>, <code>CTRL + x</code>.</p>
+<p>Then we need to active these changes by running <code>source ~/.bashrc</code>. You can also close and reopen your terminal to achieve the same result.</p>
+<p>Next we need to make some directories and edit permissions. Make the following directories:</p>
+<pre class="shell"><code>sudo mkdir -p /app/hadoop/tmp
+mkdir -p ~/hdfs/namenode
+mkdir ~/hdfs/datanode</code></pre>
+<p>Edit the permissions for <code>/app/hadoop/tmp</code>, giving it read and write access.</p>
+<pre class="shell"><code>sudo chown -R $USER:$USER /app
+chmod a+rw -R /app</code></pre>
+</section>
+<section id="config-files" class="level4">
+<h4 class="anchored" data-anchor-id="config-files">Config Files</h4>
+<p>All the Hadoop configuration files are located in <code>/opt/hadoop/etc/hadoop/</code>.</p>
+<p><code>cd /opt/hadoop/etc/hadoop</code></p>
+<p>Next we need to edit the following configuration files:</p>
+<pre><code>- core-site.xml
+- hadoop-env.sh
+- hdfs-site.xml
+- mapred-site.xml
+- yarn-site.xml</code></pre>
+<p><strong>core-site.xml</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;hadoop.tmp.dir&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;/app/hadoop/tmp&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">description</span>&gt;Parent directory for other temporary directories.&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;fs.defaultFS &lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;hdfs://YOUR_IP:9000&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">description</span>&gt;The name of the default file system. &lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>hadoop.tmp.dir</code>: Fairly self explanatory, just a directory for hadoop to store other temp directories <code>fs.defaultFS</code>: The IP and port of your file system to access over the network. It should be your IP so other nodes can connect to it if this were a distributed system.</p>
+<p>To find your ip, type <code>ip addr</code> or <code>ifconfig</code> on the command line:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ip.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Find your IP</figcaption><p></p>
+</figure>
+</div>
+<p><strong>hadoop-env.sh</strong></p>
+<ol type="1">
+<li>Identify the location of the Java 8 JDK, it should be similar or idential to <code>/usr/lib/jvm/java-8-openjdk-amd64/</code></li>
+<li>Add the following line to <code>hadoop-env.sh</code>: <code>export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/</code></li>
+</ol>
+<p><strong>hdfs-site.xml</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;dfs.replication&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;1&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">description</span>&gt;Default block replication.&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;dfs.name.dir&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;file:///home/YOUR_USER/hdfs/namenode&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;dfs.data.dir&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;file:///home/YOUR_USER/hdfs/datanode&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>dfs.replication</code>: How many nodes to replicate the data on.</p>
+<p><code>dfs.name.dir</code>: Directory for namenode blocks</p>
+<p><code>dfs.data.dir</code>: Directory for the data node blocks</p>
+<p><strong>mapred-site.xml</strong></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;mapreduce.framework.name&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;yarn&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;mapreduce.jobtracker.address&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;localhost:54311&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;yarn.app.mapreduce.am.env&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;HADOOP_MAPRED_HOME=$HADOOP_MAPRED_HOME&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;mapreduce.map.env&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;HADOOP_MAPRED_HOME=$HADOOP_MAPRED_HOME&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;mapreduce.reduce.env&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;HADOOP_MAPRED_HOME=$HADOOP_MAPRED_HOME&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;mapreduce.map.memory.mb&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;4096&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;mapreduce.reduce.memory.mb&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;4096&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>mapreduce.framework.name</code>: The runtime framework for executing MapReduce jobs. Can be one of local, classic or yarn.</p>
+<p><code>mapreduce.jobtracker.address</code>: The host and port that the MapReduce job tracker runs at. If “local”, then jobs are run in-process as a single map and reduce task.</p>
+<p><code>yarn.app.mapreduce.am.env</code>: Yarn map reduce env variable.</p>
+<p><code>mapreduce.map.env</code>: Map reduce map env variable.</p>
+<p><code>mapreduce.reduce.env</code>: Map reduce reduce env variable.</p>
+<p><code>mapreduce.map.memory.mb</code>: Upper memory limit that Hadoop allows to be allocated to a mapper, in megabytes. The default is 512.</p>
+<p><code>mapreduce.reduce.memory.mb</code>: Upper memory limit that Hadoop allows to be allocated to a reducer, in megabytes. The default is 512.</p>
+<p><strong>yarn-site.xml</strong></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- Site specific YARN configuration properties --&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;yarn.resourcemanager.hostname&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;localhost&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;yarn.nodemanager.aux-services&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;mapreduce_shuffle&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;yarn.nodemanager.resource.memory-mb&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;16256&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;yarn.app.mapreduce.am.resource.mb&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;4096&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">name</span>&gt;yarn.scheduler.minimum-allocation-mb&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">value</span>&gt;4096&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>yarn.resourcemanager.hostname</code>: The hostname of the RM. Could also be an ip address of a remote yarn instance.</p>
+<p><code>yarn.nodemanager.aux-services</code>: Selects a shuffle service that needs to be set for MapReduce to run.</p>
+<p><code>yarn.nodemanager.resource.memory-mb</code>: Amount of physical memory, in MB, that can be allocated for containers. For reference, I have 64GB of RAM on my machine. If this value is too low, you won’t be able to process large files, getting a <code>FileSegmentManagedBuffer</code> error.</p>
+<p><code>yarn.app.mapreduce.am.resource.mb</code>: This property specify criteria to select resource for particular job. Any nodemanager which has equal or more memory available will get selected for executing job.</p>
+<p><code>yarn.scheduler.minimum-allocation-mb</code>: The minimum allocation for every container request at the RM, in MBs. Memory requests lower than this won’t take effect, and the specified value will get allocated at minimum.</p>
+</section>
+<section id="start-hadoop" class="level4">
+<h4 class="anchored" data-anchor-id="start-hadoop">Start Hadoop</h4>
+<p>Before we start Hadoop we have to format the namenode:</p>
+<p><code>hdfs namenode -format</code></p>
+<p>Now we’re good to start Hadoop! Run the following commands:</p>
+<pre class="shell"><code>start-dfs.sh
+start-yarn.sh</code></pre>
+<p>To ensure everything has started run the following commands:</p>
+<p><code>ss -ln | grep 9000</code></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="ss.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">SS output</figcaption><p></p>
+</figure>
+</div>
+<p><code>jps</code></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="jps.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">jps output</figcaption><p></p>
+</figure>
+</div>
+<p>You can now also access the Hadoop web UI at localhost:9870.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="hadoop.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Hadoop web UI</figcaption><p></p>
+</figure>
+</div>
+<p>You can also access the Yarn web UI at localhost:8088.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="yarn.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Yarn web UI</figcaption><p></p>
+</figure>
+</div>
+</section>
+</section>
+<section id="step-5---setup-hive" class="level2">
+<h2 class="anchored" data-anchor-id="step-5---setup-hive">Step 5 - Setup Hive</h2>
+<p>Now that we have Hadoop up and running, let’s install Hive on top of it.</p>
+<p>First let’s make a directory in Hadoop where our Hive tables are going to be stored.</p>
+<p><code>hdfs dfs -mkdir -p /user/hive/warehouse</code></p>
+<p>Configure permissions.</p>
+<p><code>hdfs dfs -chmod -R a+rw /user/hive</code></p>
+<section id="setup-a-metastore" class="level4">
+<h4 class="anchored" data-anchor-id="setup-a-metastore">Setup a Metastore</h4>
+<p>The Hive Metastore is the central repository of Hive Metadata. It stores the meta data for Hive tables and relations (Schema and Locations etc). It provides client access to this information by using metastore service API. There are 3 different types of metastores:</p>
+<ul>
+<li>Embedded Metastore: Only one Hive session can be open at a time.</li>
+<li>Local Metastore: Multiple Hive sessions, have to connect to an external DB.</li>
+<li>Remote Metastore: Multiple Hive sessions, interact with the metastore using Thrift API, better security and scalability.</li>
+</ul>
+<p>To read up on the difference between each type of metastore in more detail, this is a great <a href="https://data-flair.training/blogs/apache-hive-metastore/">link</a>.</p>
+<p>In this guide we’re going to be setting up a remote metastore using a MySQL DB.</p>
+<pre class="shell"><code>sudo apt update
+sudo apt install mysql-server
+sudo mysql_secure_installation</code></pre>
+<p>Run the following commands:</p>
+<pre class="shell"><code>sudo mysql</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">DATABASE</span> metastore;</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="fu">USER</span> <span class="st">'hive'</span>@<span class="st">'%'</span> <span class="kw">IDENTIFIED</span> <span class="kw">BY</span> <span class="st">'PW_FOR_HIVE'</span>;</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">ALL</span> <span class="kw">ON</span> metastore.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'hive'</span>@<span class="st">'%'</span> <span class="kw">WITH</span> <span class="kw">GRANT</span> <span class="kw">OPTION</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Replace <code>PW_FOR_HIVE</code> with the password you want to use for the hive user in MySQL.</p>
+<p>Download the MySQL Java Connector:</p>
+<pre class="shell"><code>wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.19.tar.gz
+tar -xzvf mysql-connector-java-8.0.19.tar.gz
+cd mysql-connect-java-8.0.19
+cp mysql-connector-java-8.0.19.jar /opt/hive/lib/</code></pre>
+</section>
+<section id="edit-hive-site.xml" class="level4">
+<h4 class="anchored" data-anchor-id="edit-hive-site.xml">Edit hive-site.xml</h4>
+<p>Now edit <code>/opt/hive/conf/hive-site.xml</code>:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">name</span>&gt;javax.jdo.option.ConnectionURL&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">value</span>&gt;jdbc:mysql://YOUR_IP:3306/metastore?createDatabaseIfNotExist=true<span class="dv">&amp;amp;</span>useLegacyDatetimeCode=false<span class="dv">&amp;amp;</span>serverTimezone=UTC&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">description</span>&gt;metadata is stored in a MySQL server&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">name</span>&gt;javax.jdo.option.ConnectionDriverName&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">value</span>&gt;com.mysql.jdbc.Driver&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">description</span>&gt;MySQL JDBC driver class&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">name</span>&gt;javax.jdo.option.ConnectionUserName&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">value</span>&gt;hive&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">description</span>&gt;user name for connecting to mysql server&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">name</span>&gt;javax.jdo.option.ConnectionPassword&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">value</span>&gt;PW_FOR_HIVE&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">description</span>&gt;password for connecting to mysql server&lt;/<span class="kw">description</span>&gt;</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Replace <code>YOUR_IP</code> with the local ip address. Replace <code>PW_FOR_HIVE</code> with the password you initiated for the hive user earlier.</p>
+</section>
+<section id="initialize-schema" class="level4">
+<h4 class="anchored" data-anchor-id="initialize-schema">Initialize Schema</h4>
+<p>Now let’s make MySQL accessible from anywhere on your network.</p>
+<p><code>sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf</code></p>
+<p>Change <code>bind-address</code> to <code>0.0.0.0</code>.</p>
+<p>Restart the service for the changes take effect: <code>sudo systemctl restart mysql.service</code></p>
+<p>Finally, run <code>schematool -dbType mysql -initSchema</code> to initialize the schema in the metastore database.</p>
+</section>
+<section id="start-hive-metastore" class="level4">
+<h4 class="anchored" data-anchor-id="start-hive-metastore">Start Hive Metastore</h4>
+<p><code>hive --service metastore</code></p>
+</section>
+<section id="testing-hive" class="level4">
+<h4 class="anchored" data-anchor-id="testing-hive">Testing Hive</h4>
+<p>First start up Hive from the command line by calling <code>hive</code>.</p>
+<p>Let’s create a test table:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">NOT</span> <span class="kw">EXISTS</span> test_table</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a> (col1 <span class="dt">int</span> <span class="kw">COMMENT</span> <span class="st">'Integer Column'</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a> col2 string <span class="kw">COMMENT</span> <span class="st">'String Column'</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a> <span class="kw">COMMENT</span> <span class="st">'This is test table'</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a> <span class="kw">ROW</span> FORMAT DELIMITED</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a> FIELDS TERMINATED <span class="kw">BY</span> <span class="st">','</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a> STORED <span class="kw">AS</span> TEXTFILE;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then insert some test data.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> test_table <span class="kw">VALUES</span>(<span class="dv">1</span>,<span class="st">'aaa'</span>);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then we can view the data from the table.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> test_table;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="step-6---setup-spark" class="level2">
+<h2 class="anchored" data-anchor-id="step-6---setup-spark">Step 6 - Setup Spark</h2>
+<p>Spark is a general-purpose distributed data processing engine that is suitable for use in a wide range of circumstances. On top of the Spark core data processing engine, there are libraries for SQL, machine learning, graph computation, and stream processing, which can be used together in an application. In this tutorial we’re going to setup a standalone Spark cluster using Docker and have it be able to spin up any number of workers. This reasoning behind this is we want to simulate a remote cluster and some of the configuration required for it.</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In a production setting, Spark is usually going to be configured to use Yarn and the resources already allocated for Hadoop.</p>
+</div>
+</div>
+<p>First we need to create the Docker file. We’re going to use Spark version 2.4.4 in this tutorial but you can change it to 2.4.5 if you want the latest version and it also ships with Hadoop 2.7 to manage persistence and book keeping between nodes. In a production setting, Spark is often configured with Yarn to use the existing Hadoop environment and resources, since we only have Hadoop on one node, we’re going to run a spark standalone cluster. To configure Spark to run with Yarn requires minimal changes and you can see the difference in setup <a href="https://www.linode.com/docs/databases/hadoop/install-configure-run-spark-on-top-of-hadoop-yarn-cluster/">here</a>.</p>
+<section id="setup-standalone-cluster" class="level4">
+<h4 class="anchored" data-anchor-id="setup-standalone-cluster">Setup Standalone Cluster</h4>
+<p><code>nano Dockerfile</code></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode dockerfile code-with-copy"><code class="sourceCode dockerfile"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> python:3.7-alpine</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ARG</span> SPARK_VERSION=2.4.4</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="kw">ARG</span> HADOOP_VERSION=2.7</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="fu">wget</span> <span class="at">-q</span> https://archive.apache.org/dist/spark/spark-<span class="va">${SPARK_VERSION}</span>/spark-<span class="va">${SPARK_VERSION}</span>-bin-hadoop<span class="va">${HADOOP_VERSION}</span>.tgz <span class="dt">\</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;&amp;</span> <span class="fu">tar</span> xzf spark-<span class="va">${SPARK_VERSION}</span>-bin-hadoop<span class="va">${HADOOP_VERSION}</span>.tgz <span class="at">-C</span> / <span class="dt">\</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;&amp;</span> <span class="fu">rm</span> spark-<span class="va">${SPARK_VERSION}</span>-bin-hadoop<span class="va">${HADOOP_VERSION}</span>.tgz <span class="dt">\</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a> <span class="kw">&amp;&amp;</span> <span class="fu">ln</span> <span class="at">-s</span> /spark-<span class="va">${SPARK_VERSION}</span>-bin-hadoop<span class="va">${HADOOP_VERSION}</span> /spark</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">apk</span> add shell coreutils procps</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">apk</span> fetch openjdk8</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">apk</span> add openjdk8</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="kw">RUN</span> <span class="ex">pip3</span> install ipython</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="kw">ENV</span> PYSPARK_DRIVER_PYTHON ipython</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Now we want to spin up a Spark master and N number of spark workers. For this we’re going to use docker-compose.</p>
+<p><code>nano docker-compose.yml</code></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">version</span><span class="kw">:</span><span class="at"> </span><span class="st">"3.3"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">spark-network</span><span class="kw">:</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">services</span><span class="kw">:</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">spark-master</span><span class="kw">:</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">container_name</span><span class="kw">:</span><span class="at"> spark-master</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">hostname</span><span class="kw">:</span><span class="at"> spark-master</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">    command</span><span class="kw">: </span><span class="ch">&gt;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>      /bin/sh -c '</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>      /spark/sbin/start-master.sh</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>      &amp;&amp; tail -f /spark/logs/*'</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> 8080:8080</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> 7077:7077</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> spark-network</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">spark-worker</span><span class="kw">:</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">build</span><span class="kw">:</span><span class="at"> .</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">depends_on</span><span class="kw">:</span></span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> spark-master</span></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a><span class="fu">    command</span><span class="kw">: </span><span class="ch">&gt;</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      /bin/sh -c '</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>      /spark/sbin/start-slave.sh $$SPARK_MASTER</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>      &amp;&amp; tail -f /spark/logs/*'</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">env_file</span><span class="kw">:</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> spark-worker.env</span></span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> SPARK_MASTER=spark://spark-master:7077</span></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> SPARK_WORKER_WEBUI_PORT=8080</span></span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="dv">8080</span></span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">networks</span><span class="kw">:</span></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> spark-network</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>For the master container we’re exposing port 7077 for our applications to connect to and port 8080 for the Spark job UI. For the worker we’re connecting to our Spark master through the environment variables.</p>
+<p>For more options to configure the spark worker, we add them to <code>spark-worker.env</code> file.</p>
+<p><code>nano spark-worker.env</code></p>
+<pre class="shell"><code>SPARK_WORKER_CORES=3
+SPARK_WORKER_MEMORY=8G</code></pre>
+<p>In this configuration, each worker will use 3 cores and have 8GB of memory. Since my machine has 6 cores, we’re going to start up 2 workers. Change these values so that it is relative to your machine. For example, if your machine only has 16GB of RAM, a good memory value might be 2 or 4GB. For a full list of environment variables and more information on stand alone mode, you can read the full documentation <a href="https://spark.apache.org/docs/latest/spark-standalone.html">here</a>. If you’re wondering about executor memory, that set when submitting or starting applications.</p>
+<pre class="shell"><code>docker-compose build
+docker-compose up -d --scale spark-worker=2</code></pre>
+<p>Now spark is up and running and you can view the web UI at localhost:8080!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="spark.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Spark web UI</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="install-spark-locally" class="level4">
+<h4 class="anchored" data-anchor-id="install-spark-locally">Install Spark Locally</h4>
+<p>On your local machine, or any machine that’s going to be creating or using Spark, Spark needs to be installed. Since we are setting up a remote Spark cluster we have install it from the source. We’re going to use PySpark for this tutorial because I most of the time I use Python for my personal projects.</p>
+<p>You can download Spark from <a href="https://archive.apache.org/dist/spark/">here</a>.</p>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ensure you download the same version you installed on your master. For this tutorial it’s version 2.4.4</p>
+</div>
+</div>
+<pre class="shell"><code>wget https://archive.apache.org/dist/spark/spark-2.4.4/spark-2.4.4-bin-hadoop2.7.tgz
+tar -C /opt -xzvf spark-2.4.4-bin-hadoop2.7.tgz</code></pre>
+<p>Setup the Spark environment variables, <code>nano ~/.bashrc</code></p>
+<pre class="shell"><code>export SPARK_HOME=/opt/spark
+export PATH=$SPARK_HOME/bin:$PATH
+
+export PYSPARK_DRIVER_PYTHON="jupyter"
+export PYSPARK_DRIVER_PYTHON_OPTS="notebook"
+export PYSPARK_PYTHON=python3</code></pre>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you prefer Jupyter Lab, change ‘notebook’, to ‘lab’ for PYSPARK_DRIVER_PYTHON_OPTS.</p>
+</div>
+</div>
+</section>
+<section id="config-files-1" class="level4">
+<h4 class="anchored" data-anchor-id="config-files-1">Config Files</h4>
+<p>To configure Spark to use our Hadoop and Hive we need to have the config files for both in the Spark config folder.</p>
+<pre class="shell"><code>cp $HADOOP_HOME/etc/hadoop/core-site.xml /opt/spark/conf/
+cp $HADOOP_HOME/etc/hadoop/hdfs-site.xml /opt/spark/conf/</code></pre>
+<p><code>nano /opt/spark/conf/hive-site.xml</code></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode xml code-with-copy"><code class="sourceCode xml"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">configuration</span>&gt;</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">name</span>&gt;hive.metastore.uris&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">value</span>&gt;thrift://YOUR_IP:9083&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">property</span>&gt;</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">name</span>&gt;spark.sql.warehouse.dir&lt;/<span class="kw">name</span>&gt;</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">value</span>&gt;hdfs://YOUR_IP:9000/user/hive/warehouse&lt;/<span class="kw">value</span>&gt;</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">property</span>&gt;</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">configuration</span>&gt;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>hive.metastore.uris</code>: Tells Spark to interact with the Hive metastore using the Thrift API. <code>spark.sql.warehouse.dir</code>: Tells Spark where our Hive tables are located in HDFS.</p>
+</section>
+<section id="install-pyspark" class="level4">
+<h4 class="anchored" data-anchor-id="install-pyspark">Install PySpark</h4>
+<p><code>pip3 install pyspark==2.4.4</code> or replace 2.4.4 with whatever version you installed on your spark master.</p>
+<p>To run PySpark connecting to our distributed cluster run:</p>
+<p><code>pyspark --master spark://localhost:7077</code>, you can also replace <code>localhost</code> with your ip or a remote ip.</p>
+<p>This will start up a Jupyter Notebook with the Spark Context pre defined. As a result, we now have a single environment to analyze data with or without Spark.</p>
+<p>By default the executor memory is only ~1GB (1024mb). To increase it start pyspark with the following command:</p>
+<p><code>pyspark --master spark://localhost:7077 --executor-memory 7g</code></p>
+<p>There is a 10% overhead per executor in Spark so the most we could assign is 7200mb, but to be safe and have a nice round number we’ll go with 7.</p>
+</section>
+</section>
+<section id="test-integrations" class="level2">
+<h2 class="anchored" data-anchor-id="test-integrations">Test Integrations</h2>
+<p>By default a SparkContext is automatically created and the variable is <code>sc</code>.</p>
+<p>To read from our previously created hive table.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyspark.sql <span class="im">import</span> HiveContext</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>hc <span class="op">=</span> HiveContext(sc)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>hc.sql(<span class="st">"show tables"</span>).show()</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>hc.sql(<span class="st">"select * from test_table"</span>).show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To read a file from Hadoop the command would be:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>sparksession <span class="op">=</span> SparkSession.builder.appName(<span class="st">"example-pyspark-read-and-write"</span>).getOrCreate()</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> (sparksession</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    .read</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">format</span>(<span class="st">"csv"</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    .option(<span class="st">"header"</span>, <span class="st">"true"</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    .load(<span class="st">"hdfs://YOUR_IP:9000/PATH_TO_FILE"</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="practical-hadoop-use-cases" class="level2">
+<h2 class="anchored" data-anchor-id="practical-hadoop-use-cases">Practical Hadoop Use Cases</h2>
+<p>Besides storing data, Hadoop is also utilized as a Feature Store. Let’s say you’re apart of a team or organization and they have multiple models. For each model there is a data pipeline that ingests raw data, computes and transforms the data into features. For one or two models this is perfectly fine, but what if you have multiple models? What if across those models features are being reused (i.e log normalized stock prices)?</p>
+<p>Instead of each data pipeline recomputing the same features, we can create a data pipeline that computes the features once and store it in a Feature Store. The model can now pull features from the Feature Store without any redundant computation. This reduces the number of redundant computations and transformations throughout your data pipelines!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="featurestore.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Basic Feature Store concept</figcaption><p></p>
+</figure>
+</div>
+<p>Feature Stores also help with the following issues:</p>
+<ul>
+<li><p>Features are not reused. A common obstacle data scientists face is spending time redeveloping features instead of using previously developed features or ones developed by other teams. Feature stores allow data scientists to avoid repeat work.</p></li>
+<li><p>Feature definitions vary. Different teams at any one company might define and name features differently. Moreover, accessing the documentation of a specific feature (if it exists at all) is often challenging. Feature stores address this issue by keeping features and their definitions organized and consistent. The documentation of the feature store helps you create a standardized language around all of the features across the company. You know exactly how every feature is computed and what information it represents.</p></li>
+<li><p>There is inconsistency between training and production features. Production and research environments often use different technologies and programming languages. The data streaming in to the production system needs to be processed into features in real time and fed into a machine learning model.</p></li>
+</ul>
+<p>If you want to take a look at a Feature Store and get started for free, I recommend <a href="https://streamsql.io/">StreamSQL</a>. StreamSQL allows you to stream your data from various sources such as HDFS, local file system, Kafka, etc. and create a data pipeline that can feed your model! It has the ability to save the feature store online or on your local HDFS for you to train your models. It also does the service of creating your test (hold out) set for you as well. They have a well documented API and is consistently improving upon it.</p>
+</section>
+<section id="feedback" class="level2">
+<h2 class="anchored" data-anchor-id="feedback">Feedback</h2>
+<p>I encourage all feedback about this post. You can e-mail me at sidhuashton@gmail.com or leave a comment on the post if you have any questions or need any help.</p>
+<p>You can also reach me and follow me on Twitter at <a href="https://twitter.com/ashtonasidhu"><span class="citation" data-cites="ashtonasidhu">@ashtonasidhu</span></a>.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
